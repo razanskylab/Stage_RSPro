@@ -1,15 +1,27 @@
 # Stage_RSPro
 
-A stepper motor driven stage based on an RS Components controller and an Arduino. Alternatively I also got it running with the much cheaper module provided by [Pololu](https://www.pololu.com/product/2998).
+## Overview of project
 
-The whole project consists of three parts
+Build your own simple linear stage including Serial interface and a customized microcontroller code. The whole project consists of three parts
 
 *  Lead screw driven stage with a home switch and a stepper motor
 *  Electronics to wire the stepper motor
 *  Firmware with a serial protocol for communication
 *  MATLAB interfacing code to allow object oriented stage control
 
-Initially I started this because all the commercially available solutions were just way to expensive while providing high accuracies. I simply needed to move a camera forth and back between two positions 
+Initially I started this because all the commercially available solutions were just way to expensive while providing high accuracies. I simply needed to move a camera forth and back between two positions and did not want to spend 3k CHF on a super expensive motorized stage.
+
+## Hardware
+
+*  Any Arduino should do the job of the controlling
+*  For the stepper motor driver I would recommend [this module by Pololu](https://www.pololu.com/product/2998)
+*  I had the linear stage and the stepper motor laying around
+
+## Missing features which will be implemented ASAP
+
+*  home switch
+*  homing velocity
+*  acceleration / piecewise increase of speed
 
 ## Serial communication protocol
 
