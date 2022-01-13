@@ -21,6 +21,7 @@ class controllerboard
 		int32_t iStep = 0; // current step count
 		float pitch = 8.0; // distance in mm / rev
 		float stepsPerRev = 400.0; // number of steps / rev
+		float stepsPerSqSec = 2500; // acceleration
 
 	public:
 		controllerboard();

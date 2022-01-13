@@ -128,12 +128,49 @@ void controllerboard::goto_pos(const float goalPos)
 		digitalWriteFast(pinLedMotor, HIGH);
 		const int32_t dirStep = (deltaSteps < 0) ? 0 : 1;
 		digitalWriteFast(pinDir, dirStep);
-		const float tDelayMicros = round(1 / stepsPerSec * 1e6);
+		const float ss = get_stepsToMm(); // step size in mm
+		float vmax = stepsPerSec * ss; // mm
+		const float acc = stepsPerSqSec * ss; // mm / s2
+		const float deltaS = absSteps * ss;
+		
+		// define end point of acceleration and start point of deceleration
+		float s_1 = vmax * vmax / (2 * acc);
+		float s_2 = deltaS - s_1;
+
+		if (s_1 > s_2) // if we dont even reach full speed
+		{
+			s_1 = deltaS / 2;
+			s_2 = deltaS / 2;
+			vmax = sqrt(deltaS * acc);
+		}
+
+		float vcurr = 0;
 		for (int32_t incStep = 0; incStep < absSteps; incStep++)
 		{
+			// calculate central position of current step
+			const float s = ((float) incStep + 0.5) * ss;
+			
+			// calculate velocity at current step
+			if (s < s_1)
+			{
+				vcurr = sqrt(2 * s * acc);
+			}
+			else if (s < s_2)
+			{
+				vcurr = vmax;
+			}
+			else
+			{
+				vcurr = sqrt(vmax * vmax - 2 * (s - s_2) * acc);
+			}
+
+			// convert velocity to delay
+			const uint32_t tDelay = round(ss / vcurr * 1e6); // in micros
+
+			// act accordingly
 			stepPolarity = !stepPolarity;
 			digitalWriteFast(pinStep, stepPolarity);
-			delayMicroseconds(tDelayMicros);
+			delayMicroseconds(tDelay);
 		}
 		iStep += deltaSteps;
 		digitalWriteFast(pinLedMotor, LOW);

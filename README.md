@@ -14,14 +14,26 @@ Initially I started this because all the commercially available solutions were j
 ## Hardware
 
 *  Any Arduino should do the job of the controlling
-*  For the stepper motor driver I would recommend [this module by Pololu](https://www.pololu.com/product/2998)
-*  I had the linear stage and the stepper motor laying around
+*  For the stepper motor driver I would recommend [the TB67S128FTG module by Pololu](https://www.pololu.com/product/2998)
+*  I extracted the stepper motor and the linear stage from an old 3D printer
 
 ## Missing features which will be implemented ASAP
 
 *  home switch
 *  homing velocity
-*  acceleration / piecewise increase of speed
+*  current adaption
+*  enable and disable option
+
+## Acceleration
+
+
+If we directly try to run the stepper at full speed, we are likely to induce misstepping (unless we operate the stage only at very low velocities). Therefore we have acceleration to increase the velocity from 0 to the target value defined through vel. Before reaching the target position we slow down stepwise.
+
+Velocity is defined through the temporal delay between the stepping events since the stepping itself has a fixed spatial footprint. The procedure used in this library is explained in detail [here](https://hofmannu.org/2022/01/06/trap-vel-stepper-motor/).
+
+## Coil current
+
+The current running through the coils of the stepper motor defines how much force the coils can work against. Typically I would like to set the coil current lower for holding a position then for driving between positions. For this one can use the pin XXX on the 
 
 ## Serial communication protocol
 
