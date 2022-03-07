@@ -11,6 +11,7 @@ function Connect(r)
 	if (~r.isConnected)
 		r.s = serialport(r.COM_PORT, r.BAUD_RATE);
 		r.isConnected = 1;
+		r.Handshake();
 	end
 
 	fprintf("done after %.1f sec!\n", toc(tStart));

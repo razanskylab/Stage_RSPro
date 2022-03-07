@@ -1,18 +1,28 @@
 #ifndef controllerboard_h
 #define controllerboard_h
 
-#include <cstdint>
+#include <stdint.h>
 #include <arduino.h>
 
 class controllerboard
 {
 	private:
 		const uint32_t baudRate = 9600;
-		const uint32_t pinLedSerial = 32;
-		const uint32_t pinLedMotor = 31;
-		const uint32_t pinLedSensor = 30;
-		const uint32_t pinDir = 29;
-		const uint32_t pinStep = 28;
+
+		// pinouts for LEDs
+		const uint32_t pinLedSerial = 17;
+		const uint32_t pinLedMotor = 19;
+		const uint32_t pinLedSensor = 18;
+
+		// pinouts for motor
+		// 2 - enable
+		// 3 - not standby
+		// 4 - step
+		// 5 - dir
+		const uint32_t pinDir = 5;
+		const uint32_t pinStep = 4;
+		const uint32_t pinEnable = 2;
+		const uint32_t pinStandby = 3;
 
 		bool stepPolarity = 0; 
 
@@ -22,6 +32,7 @@ class controllerboard
 		float pitch = 8.0; // distance in mm / rev
 		float stepsPerRev = 400.0; // number of steps / rev
 		float stepsPerSqSec = 2500; // acceleration
+		bool isEnabled = 0;
 
 	public:
 		controllerboard();
@@ -51,6 +62,9 @@ class controllerboard
 
 		float get_stepsToMm() {return pitch / stepsPerRev;};
 		float get_mmToSteps() {return stepsPerRev / pitch;};
+
+		void enable();
+		void disable();
 };
 
 #endif

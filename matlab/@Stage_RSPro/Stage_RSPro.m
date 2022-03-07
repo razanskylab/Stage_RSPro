@@ -9,7 +9,7 @@
 classdef Stage_RSPro < handle
 
 	properties(Constant)
-		COM_PORT(1, :) char = 'COM9';
+		COM_PORT(1, :) char = 'COM3';
 		BAUD_RATE(1, 1) = 9600;
 	end
 
@@ -27,6 +27,7 @@ classdef Stage_RSPro < handle
 
 	methods
 
+		% class constructor and destructor
 		function obj = Stage_RSPro()
 			obj.Connect();
 		end
@@ -35,6 +36,7 @@ classdef Stage_RSPro < handle
 			obj.Disconnect();
 		end
 
+		% get and set function for position
 		function pos = get.pos(r)
 			write(r.s, 'p', "uint8");
 			pos = read(r.s, 1, 'single');
@@ -47,6 +49,7 @@ classdef Stage_RSPro < handle
 			r.Handshake();
 		end
 
+		% get and set function for velocity
 		function vel = get.vel(r)
 			write(r.s, 'w', "uint8");
 			vel = read(r.s, 1, 'single');
@@ -59,6 +62,7 @@ classdef Stage_RSPro < handle
 			r.Handshake();
 		end
 
+		% get and set function for lead screw pitch
 		function pitch = get.pitch(r)
 			write(r.s, 't', "uint8");
 			pitch = read(r.s, 1, 'single');
@@ -71,6 +75,7 @@ classdef Stage_RSPro < handle
 			r.Handshake();
 		end
 
+		% get and set function for steps per revolution
 		function stepsPerRev = get.stepsPerRev(r)
 			write(r.s, 's', "uint8");
 			stepsPerRev = read(r.s, 1, 'single');
@@ -84,15 +89,17 @@ classdef Stage_RSPro < handle
 		end
 
 		% implemented stuff
-    	Identify(r);
-    	Connect(r);
-    	Disconnect(r);
-    	Handshake(r);
+  	Identify(r);
+  	Connect(r);
+  	Disconnect(r);
+  	Handshake(r);
+  	Enable(r);
+  	Disable(r);
 
-    	% not implemented yet
-    	Home(r);
-    	Move_NoWait(r);
-    	Wait_Move(r);
+  	% not implemented yet
+  	Home(r);
+  	Move_NoWait(r);
+  	Wait_Move(r);
 	end
 
 end

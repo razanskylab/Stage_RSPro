@@ -1,13 +1,22 @@
-#include "controllerboard.h"
+/*
+	File: pololu.ino
+	Author: Urs Hofmann
+	Mail: mail@hofmannu.org
+	Date: 08.03.2022
+*/
 
-controllerboard myCont;
+#include "controllerboard.h"
 
 void setup()
 {
-	myCont.identify();
+
 }
 
 void loop()
 {
-	myCont.read_command();
+	controllerboard myCont;
+	while (1)
+	{
+		myCont.read_command();
+	}
 }

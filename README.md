@@ -104,4 +104,4 @@ Command: `v` followed by a `float` specifying the target velocity in `mm/s`
 Return: `r` when completed
 Function: This function will not induce any stage movement but simply define the target velocity value which we want to reach.
 
-
+#### Enable motor coils

@@ -2,49 +2,62 @@
 
 controllerboard::controllerboard()
 {
+	Serial.begin(baudRate);
+	
 	// define internal LED as an output
 	pinMode(LED_BUILTIN, OUTPUT);
 	digitalWrite(LED_BUILTIN, LOW);
+	
+	// define serial led as output
 	pinMode(pinLedSerial, OUTPUT);
 	digitalWrite(pinLedSerial, LOW);
+	
+	// define led for motor as output
 	pinMode(pinLedMotor, OUTPUT);
 	digitalWrite(pinLedMotor, LOW);
+	
 	pinMode(pinLedSensor, OUTPUT);
 	digitalWrite(pinLedSensor, LOW);
+	
 	pinMode(pinDir, OUTPUT);
-	digitalWriteFast(pinDir, LOW);
+	digitalWrite(pinDir, LOW);
+
 	pinMode(pinStep, OUTPUT);
-	digitalWriteFast(pinStep, LOW);
+	digitalWrite(pinStep, LOW);
+
+	pinMode(pinEnable, OUTPUT);
+	digitalWrite(pinEnable, LOW);
+
+	pinMode(pinStandby, OUTPUT);
+	digitalWrite(pinStandby, HIGH);
 
 	// start serial communication stream
-	Serial.begin(baudRate);
-
+	Serial.write('r');
 }
 
 void controllerboard::identify()
 {
-	digitalWriteFast(LED_BUILTIN, HIGH);
-	digitalWriteFast(pinLedSerial, HIGH);
-	digitalWriteFast(pinLedMotor, HIGH);
-	digitalWriteFast(pinLedSensor, HIGH);
-	delay(500);
-	digitalWriteFast(LED_BUILTIN, LOW);
-	digitalWriteFast(pinLedSerial, LOW);
-	digitalWriteFast(pinLedMotor, LOW);
-	digitalWriteFast(pinLedSensor, LOW);
-	
+	digitalWrite(LED_BUILTIN, HIGH);
+	digitalWrite(pinLedSerial, HIGH);
+	digitalWrite(pinLedMotor, HIGH);
+	digitalWrite(pinLedSensor, HIGH);
+	delay(100);
+	digitalWrite(LED_BUILTIN, LOW);
+	digitalWrite(pinLedSerial, LOW);
+	digitalWrite(pinLedMotor, LOW);
+	digitalWrite(pinLedSensor, LOW);
 	return;
 }
 
 // makes the controller wait until a certain amount of bytes arrived
 void controllerboard::wait_serial(const uint16_t nSerial)
 {
-	digitalWriteFast(pinLedSerial, HIGH);
+	digitalWrite(pinLedSerial, HIGH);
 	while (Serial.available() < nSerial)
 	{
 		delay(1);
 	}
-	digitalWriteFast(pinLedSerial, LOW);
+	digitalWrite(pinLedSerial, LOW);
 	return;
 }
 
@@ -91,8 +104,15 @@ void controllerboard::read_command()
 	{
 		read_vel();
 	}
+	else if (request == 'e') // enable motor coils
+	{
+		enable();
+	}
+	else if (request == 'o')
+	{
+		disable();
+	}
 	confirm_ready();
-	// clear_serial();
 }
 
 // clear the serial command line
@@ -106,7 +126,7 @@ void controllerboard::clear_serial()
 
 void controllerboard::confirm_ready()
 {
-	Serial.println('r');
+	Serial.write('r');
 }
 
 void controllerboard::send_pos()
@@ -116,8 +136,6 @@ void controllerboard::send_pos()
 	return;
 }
 
-
-
 void controllerboard::goto_pos(const float goalPos)
 {
 	const int32_t goalSteps = round(goalPos * get_mmToSteps());
@@ -125,9 +143,9 @@ void controllerboard::goto_pos(const float goalPos)
 	const int32_t absSteps = abs(deltaSteps);
 	if (absSteps > 0)
 	{
-		digitalWriteFast(pinLedMotor, HIGH);
+		digitalWrite(pinLedMotor, HIGH);
 		const int32_t dirStep = (deltaSteps < 0) ? 0 : 1;
-		digitalWriteFast(pinDir, dirStep);
+		digitalWrite(pinDir, dirStep);
 		const float ss = get_stepsToMm(); // step size in mm
 		float vmax = stepsPerSec * ss; // mm
 		const float acc = stepsPerSqSec * ss; // mm / s2
@@ -169,11 +187,11 @@ void controllerboard::goto_pos(const float goalPos)
 
 			// act accordingly
 			stepPolarity = !stepPolarity;
-			digitalWriteFast(pinStep, stepPolarity);
+			digitalWrite(pinStep, stepPolarity);
 			delayMicroseconds(tDelay);
 		}
 		iStep += deltaSteps;
-		digitalWriteFast(pinLedMotor, LOW);
+		digitalWrite(pinLedMotor, LOW);
 	}
 	return;
 }
@@ -239,3 +257,30 @@ float controllerboard::get_float()
 	Serial.readBytes(u.temp_array, 4);
 	return u.float_variable;
 }
+
+// enables the coils of our stepper motor
+void controllerboard::enable()
+{
+	if (!isEnabled)
+	{
+		digitalWrite(pinLedMotor, HIGH);
+		digitalWrite(pinEnable, HIGH);
+		isEnabled = 1;
+	}
+	Serial.write('e');
+	return;
+}
+
+// disables the coils of our stepper motor
+void controllerboard::disable()
+{
+	if (isEnabled)
+	{
+		digitalWrite(pinLedMotor, LOW);
+		digitalWrite(pinEnable, LOW);
+		isEnabled = 0;
+	}
+	Serial.write('o');
+	return;
+}
+
