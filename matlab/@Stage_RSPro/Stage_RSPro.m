@@ -9,7 +9,7 @@
 classdef Stage_RSPro < handle
 
 	properties(Constant)
-		COM_PORT(1, :) char = 'COM8';
+		COM_PORT(1, :) char = 'COM9';
 		BAUD_RATE(1, 1) = 9600;
 	end
 

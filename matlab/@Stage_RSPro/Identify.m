@@ -5,7 +5,12 @@
 
 function Identify(r)
 
+	fprintf("[Stage_RSPro] Identifying device... ");
+	tStart = tic();
+
 	write(r.s, 'i', "uint8");
 	r.Handshake();
+
+	fprintf("done after %.2f sec!\n", toc(tStart));
 
 end

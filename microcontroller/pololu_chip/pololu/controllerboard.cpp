@@ -92,7 +92,7 @@ void controllerboard::read_command()
 		read_vel();
 	}
 	confirm_ready();
-	clear_serial();
+	// clear_serial();
 }
 
 // clear the serial command line
