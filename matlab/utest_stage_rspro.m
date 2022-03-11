@@ -23,6 +23,7 @@ if (errorVel > 1e-6)
 	error("Velocity set does not seem to work");
 end
 
+% move to a few different velocities
 R.Enable();
 R.pos = 10;
 if (R.pos ~= 10)
